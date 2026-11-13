@@ -3,7 +3,7 @@ updates:
   - package-ecosystem: uv
     directories: ["/"]
     schedule: { interval: weekly }
-    versioning-strategy: increase
+    versioning-strategy: auto
     cooldown: { default-days: 7 }
     assignees: [kazufusa]
     commit-message: { prefix: "deps(uv)" }
@@ -17,7 +17,7 @@ updates:
   - package-ecosystem: uv
     directories: ["/web/api"]
     schedule: { interval: weekly }
-    versioning-strategy: increase
+    versioning-strategy: auto
     cooldown: { default-days: 7 }
     assignees: [kazufusa]
     commit-message: { prefix: "deps(uv)" }
@@ -31,7 +31,7 @@ updates:
   - package-ecosystem: npm
     directories: ["/web/ui"]
     schedule: { interval: weekly }
-    versioning-strategy: increase
+    versioning-strategy: auto
     cooldown: { default-days: 7 }
     assignees: [kazufusa]
     commit-message: { prefix: "deps(npm)" }
@@ -45,7 +45,7 @@ updates:
   - package-ecosystem: npm
     directories: ["/web/ui-caret"]
     schedule: { interval: weekly }
-    versioning-strategy: increase
+    versioning-strategy: auto
     cooldown: { default-days: 7 }
     assignees: [kazufusa]
     commit-message: { prefix: "deps(npm)" }
