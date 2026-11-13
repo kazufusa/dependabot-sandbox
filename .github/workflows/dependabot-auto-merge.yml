@@ -20,10 +20,12 @@ jobs:
         run: |
           gh api -X POST "repos/$REPO/pulls/$PR/reviews" -f event=APPROVE -f commit_id="$HEAD"
           gh pr merge "$PR" --repo "$REPO" --auto --squash --match-head-commit "$HEAD"
+          gh api -X POST "repos/$REPO/issues/$PR/labels" -f "labels[]=automerge"
       - name: Disable auto-merge and dismiss approval
         if: github.actor != 'dependabot[bot]'
         run: |
           gh pr merge "$PR" --repo "$REPO" --disable-auto || true
+          gh api -X DELETE "repos/$REPO/issues/$PR/labels/automerge" || true
           for id in $(gh api "repos/$REPO/pulls/$PR/reviews" \
             --jq '.[] | select(.user.login == "github-actions[bot]" and .state == "APPROVED") | .id'); do
             gh api -X PUT "repos/$REPO/pulls/$PR/reviews/$id/dismissals" \
