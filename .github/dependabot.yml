@@ -3,7 +3,7 @@ updates:
   - package-ecosystem: uv
     directories: ["/"]
     schedule: { interval: weekly }
-    versioning-strategy: increase-if-necessary
+    versioning-strategy: lockfile-only
     cooldown: { default-days: 7 }
     assignees: [kazufusa]
     commit-message: { prefix: "deps(uv)" }
@@ -17,7 +17,7 @@ updates:
   - package-ecosystem: uv
     directories: ["/web/api"]
     schedule: { interval: weekly }
-    versioning-strategy: increase-if-necessary
+    versioning-strategy: lockfile-only
     cooldown: { default-days: 7 }
     assignees: [kazufusa]
     commit-message: { prefix: "deps(uv)" }

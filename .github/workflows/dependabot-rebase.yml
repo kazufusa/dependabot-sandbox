@@ -1,0 +1,19 @@
+name: dependabot-rebase
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+  pull-requests: write
+jobs:
+  rebase:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+    steps:
+      - name: Ask Dependabot to rebase auto-merge PRs
+        run: |
+          for pr in $(gh pr list --repo "$REPO" --label automerge --author "app/dependabot" --json number --jq '.[].number'); do
+            gh pr comment "$pr" --repo "$REPO" --body "@dependabot rebase"
+          done

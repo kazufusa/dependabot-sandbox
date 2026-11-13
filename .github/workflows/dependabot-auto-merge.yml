@@ -14,16 +14,30 @@ jobs:
       REPO: ${{ github.repository }}
       PR: ${{ github.event.pull_request.number }}
       HEAD: ${{ github.event.pull_request.head.sha }}
+      HEAD_REF: ${{ github.event.pull_request.head.ref }}
     steps:
-      - name: Approve and enable auto-merge
+      - name: Approve and enable auto-merge for lock-file-only patch groups
         if: github.actor == 'dependabot[bot]' && github.triggering_actor == 'dependabot[bot]'
         run: |
+          # version-update groups named "*-patch" only; security updates have no group in the branch name
+          case "$HEAD_REF" in
+            dependabot/*-patch-*) ;;
+            *) echo "not an auto-merge group; leaving this PR to reviewers"; exit 0 ;;
+          esac
+          files="$(gh api "repos/$REPO/pulls/$PR/files" --paginate --jq '.[].filename')"
+          others="$(echo "$files" | grep -vE '(^|/)(uv\.lock|package-lock\.json)$' || true)"
+          if [ -n "$others" ]; then
+            echo "lock files only are auto-merged; leaving this PR to reviewers"
+            exit 0
+          fi
           gh api -X POST "repos/$REPO/pulls/$PR/reviews" -f event=APPROVE -f commit_id="$HEAD"
           gh pr merge "$PR" --repo "$REPO" --auto --squash --match-head-commit "$HEAD"
+          gh api -X POST "repos/$REPO/issues/$PR/labels" -f "labels[]=automerge"
       - name: Disable auto-merge and dismiss approval
         if: github.actor != 'dependabot[bot]'
         run: |
           gh pr merge "$PR" --repo "$REPO" --disable-auto || true
+          gh api -X DELETE "repos/$REPO/issues/$PR/labels/automerge" || true
           for id in $(gh api "repos/$REPO/pulls/$PR/reviews" \
             --jq '.[] | select(.user.login == "github-actions[bot]" and .state == "APPROVED") | .id'); do
             gh api -X PUT "repos/$REPO/pulls/$PR/reviews/$id/dismissals" \
