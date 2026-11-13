@@ -1,0 +1,51 @@
+name: dependabot-review-request
+on:
+  pull_request:
+    types: [opened]
+  workflow_run:
+    workflows: [shared]
+    types: [completed]
+permissions:
+  contents: read
+  pull-requests: write
+jobs:
+  on-open:
+    if: github.event_name == 'pull_request' && github.event.pull_request.user.login == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+      PR: ${{ github.event.pull_request.number }}
+      TEAM: ${{ vars.REVIEW_TEAM }}
+      REVIEWER: ${{ vars.REVIEWER }}
+    steps:
+      - name: Request review from team
+        if: env.TEAM != ''
+        run: |
+          gh api -X POST "repos/$REPO/pulls/$PR/requested_reviewers" -f "team_reviewers[]=$TEAM"
+      - name: Request review from user
+        if: env.TEAM == '' && env.REVIEWER != ''
+        run: |
+          gh api -X POST "repos/$REPO/pulls/$PR/requested_reviewers" -f "reviewers[]=$REVIEWER"
+  on-failure:
+    if: >-
+      github.event_name == 'workflow_run'
+      && github.event.workflow_run.conclusion == 'failure'
+      && github.event.workflow_run.actor.login == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+      BRANCH: ${{ github.event.workflow_run.head_branch }}
+      TEAM: ${{ vars.REVIEW_TEAM }}
+      REVIEWER: ${{ vars.REVIEWER }}
+    steps:
+      - name: Request review for failed PR
+        run: |
+          pr="$(gh pr list --repo "$REPO" --head "$BRANCH" --json number --jq '.[0].number')"
+          test -n "$pr"
+          if [ -n "$TEAM" ]; then
+            gh api -X POST "repos/$REPO/pulls/$pr/requested_reviewers" -f "team_reviewers[]=$TEAM"
+          else
+            gh api -X POST "repos/$REPO/pulls/$pr/requested_reviewers" -f "reviewers[]=$REVIEWER"
+          fi

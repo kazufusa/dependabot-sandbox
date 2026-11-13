@@ -1,0 +1,98 @@
+version: 2
+updates:
+  - package-ecosystem: uv
+    directories: ["/"]
+    schedule: { interval: weekly }
+    versioning-strategy: increase-if-necessary
+    cooldown: { default-days: 7 }
+    assignees: [kazufusa]
+    commit-message: { prefix: "deps(uv)" }
+    open-pull-requests-limit: 5
+    groups:
+      uv-root-patch:
+        update-types: [patch]
+      uv-root-other:
+        update-types: [minor, major]
+
+  - package-ecosystem: uv
+    directories: ["/web/api"]
+    schedule: { interval: weekly }
+    versioning-strategy: increase-if-necessary
+    cooldown: { default-days: 7 }
+    assignees: [kazufusa]
+    commit-message: { prefix: "deps(uv)" }
+    open-pull-requests-limit: 5
+    groups:
+      uv-api-patch:
+        update-types: [patch]
+      uv-api-other:
+        update-types: [minor, major]
+
+  - package-ecosystem: npm
+    directories: ["/web/ui"]
+    schedule: { interval: weekly }
+    versioning-strategy: increase-if-necessary
+    cooldown: { default-days: 7 }
+    assignees: [kazufusa]
+    commit-message: { prefix: "deps(npm)" }
+    open-pull-requests-limit: 5
+    groups:
+      npm-ui-patch:
+        update-types: [patch]
+      npm-ui-other:
+        update-types: [minor, major]
+
+  - package-ecosystem: npm
+    directories: ["/web/ui-caret"]
+    schedule: { interval: weekly }
+    versioning-strategy: increase-if-necessary
+    cooldown: { default-days: 7 }
+    assignees: [kazufusa]
+    commit-message: { prefix: "deps(npm)" }
+    open-pull-requests-limit: 5
+    groups:
+      npm-ui-caret-patch:
+        update-types: [patch]
+      npm-ui-caret-other:
+        update-types: [minor, major]
+
+  - package-ecosystem: docker
+    directories:
+      - "/web"
+      - "/web-fromuv"
+      - "/shared/migrations"
+      - "/tools/gitleaks"
+    schedule: { interval: weekly }
+    cooldown: { default-days: 7 }
+    assignees: [kazufusa]
+    commit-message: { prefix: "deps(docker)" }
+    open-pull-requests-limit: 5
+    groups:
+      docker-patch:
+        update-types: [patch]
+      docker-other:
+        update-types: [minor, major]
+
+  - package-ecosystem: github-actions
+    directories: ["/"]
+    schedule: { interval: weekly }
+    cooldown: { default-days: 7 }
+    assignees: [kazufusa]
+    commit-message: { prefix: "deps(actions)" }
+    open-pull-requests-limit: 5
+    groups:
+      actions:
+        patterns: ["*"]
+
+  - package-ecosystem: terraform
+    directories: ["/infra/terraform"]
+    schedule: { interval: weekly }
+    cooldown: { default-days: 7 }
+    assignees: [kazufusa]
+    commit-message: { prefix: "deps(terraform)" }
+    open-pull-requests-limit: 5
+    groups:
+      terraform-patch:
+        update-types: [patch]
+      terraform-other:
+        update-types: [minor, major]
