@@ -14,10 +14,16 @@ jobs:
       REPO: ${{ github.repository }}
       PR: ${{ github.event.pull_request.number }}
       HEAD: ${{ github.event.pull_request.head.sha }}
+      HEAD_REF: ${{ github.event.pull_request.head.ref }}
     steps:
-      - name: Approve and enable auto-merge for lock-file-only PRs
+      - name: Approve and enable auto-merge for lock-file-only patch groups
         if: github.actor == 'dependabot[bot]' && github.triggering_actor == 'dependabot[bot]'
         run: |
+          # version-update groups named "*-patch" only; security updates have no group in the branch name
+          case "$HEAD_REF" in
+            dependabot/*-patch-*) ;;
+            *) echo "not an auto-merge group; leaving this PR to reviewers"; exit 0 ;;
+          esac
           files="$(gh api "repos/$REPO/pulls/$PR/files" --paginate --jq '.[].filename')"
           others="$(echo "$files" | grep -vE '(^|/)(uv\.lock|package-lock\.json)$' || true)"
           if [ -n "$others" ]; then
