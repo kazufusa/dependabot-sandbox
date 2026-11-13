@@ -4,7 +4,7 @@ requires-python = "==3.14.*"
 
 [manifest]
 members = [
-    "dependabot-verify",
+    "dependabot-sandbox",
     "shared",
     "slack-app",
 ]
