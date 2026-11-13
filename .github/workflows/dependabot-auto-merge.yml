@@ -19,7 +19,8 @@ jobs:
         if: github.actor == 'dependabot[bot]' && github.triggering_actor == 'dependabot[bot]'
         run: |
           files="$(gh api "repos/$REPO/pulls/$PR/files" --paginate --jq '.[].filename')"
-          if echo "$files" | grep -qvE '(^|/)(uv\.lock|package-lock\.json)$'; then
+          others="$(echo "$files" | grep -vE '(^|/)(uv\.lock|package-lock\.json)$' || true)"
+          if [ -n "$others" ]; then
             echo "lock files only are auto-merged; leaving this PR to reviewers"
             exit 0
           fi
