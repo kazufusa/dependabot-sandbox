@@ -15,9 +15,14 @@ jobs:
       PR: ${{ github.event.pull_request.number }}
       HEAD: ${{ github.event.pull_request.head.sha }}
     steps:
-      - name: Approve and enable auto-merge
+      - name: Approve and enable auto-merge for lock-file-only PRs
         if: github.actor == 'dependabot[bot]' && github.triggering_actor == 'dependabot[bot]'
         run: |
+          files="$(gh api "repos/$REPO/pulls/$PR/files" --paginate --jq '.[].filename')"
+          if echo "$files" | grep -qvE '(^|/)(uv\.lock|package-lock\.json)$'; then
+            echo "lock files only are auto-merged; leaving this PR to reviewers"
+            exit 0
+          fi
           gh api -X POST "repos/$REPO/pulls/$PR/reviews" -f event=APPROVE -f commit_id="$HEAD"
           gh pr merge "$PR" --repo "$REPO" --auto --squash --match-head-commit "$HEAD"
           gh api -X POST "repos/$REPO/issues/$PR/labels" -f "labels[]=automerge"
