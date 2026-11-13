@@ -1,2 +1,3 @@
-/shared/ @kazufusa
-/.github/workflows/shared.yml @kazufusa
+* @kazufusa
+uv.lock
+package-lock.json
