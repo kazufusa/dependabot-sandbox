@@ -6,8 +6,8 @@ dependencies = []
 
 [dependency-groups]
 dev = [
-    "rust-just==1.42.4",
-    "pip-audit>=2.9.0",
+    "rust-just==1.59.0",
+    "pip-audit>=2.10.1",
 ]
 
 [tool.uv.workspace]
