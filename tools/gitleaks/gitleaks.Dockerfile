@@ -1,1 +1,1 @@
-FROM ghcr.io/gitleaks/gitleaks:v8.24.0
+FROM ghcr.io/gitleaks/gitleaks:v8.30.1
